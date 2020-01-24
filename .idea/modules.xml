@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/NCoVMonitor.iml" filepath="$PROJECT_DIR$/NCoVMonitor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../libPaperCube-JavaSE/SimpleLocalLogger/SimpleLocalLogger.iml" filepath="$PROJECT_DIR$/../libPaperCube-JavaSE/SimpleLocalLogger/SimpleLocalLogger.iml" />
+    </modules>
+  </component>
+</project>
