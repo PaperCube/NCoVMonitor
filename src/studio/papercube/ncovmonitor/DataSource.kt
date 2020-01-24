@@ -3,6 +3,7 @@ package studio.papercube.ncovmonitor
 import okhttp3.Request
 
 abstract class DataSource(
+        val sourceName: String,
         protected val urlString: String
 ) {
     protected open val userAgent get() = HttpRequestParameters.userAgent
@@ -14,5 +15,5 @@ abstract class DataSource(
         addHeader("accept", acceptContent)
     }
 
-    abstract fun fetchDataSource(): StatisticItem
+    abstract fun fetchDataSource(): Statistics
 }

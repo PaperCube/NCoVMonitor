@@ -28,16 +28,35 @@ fun main(args: Array<String>) {
     log.stop()
 }
 
-fun perform(){
-    val resultDir = File("./results")
-    resultDir.mkdirs()
-    val dateTodayString = LocalDate.now().toString()
-    val fileName = "Result_${dateTodayString}_${currentTimeDividedWithHyphens}.txt"
-    val resultWriter = File(resultDir, fileName)
-            .bufferedWriter(Charsets.UTF_8).let { PrintWriter(it) }
-    val dataSource = DxySource()
-    val result = dataSource.fetchDataSource()
-    resultWriter.println(result)
-    resultWriter.close()
-    log.v("Successfully saved result to $fileName")
+inline fun newResultFile(action: PrintWriter.(fileName: String) -> Unit) {
+    var resultWriter: PrintWriter? = null
+    try {
+        val resultDir = File("./results")
+        resultDir.mkdirs()
+        val dateTodayString = LocalDate.now().toString()
+        val fileName = "Result_${dateTodayString}_${currentTimeDividedWithHyphens}.txt"
+        resultWriter = File(resultDir, fileName)
+                .bufferedWriter(Charsets.UTF_8).let { PrintWriter(it) }
+        resultWriter.action(fileName)
+    } finally {
+        try {
+            resultWriter?.close()
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+}
+
+fun perform() {
+    newResultFile { fileName ->
+        val sources = listOf<DataSource>(DxySource())
+        for (source in sources) {
+            val result = source.fetchDataSource()
+            println("Source: ${source.sourceName}")
+            println(result.updateTime)
+            println(result.overall)
+            println(result.provinceData)
+        }
+        log.v("Successfully saved result to $fileName")
+    }
 }
