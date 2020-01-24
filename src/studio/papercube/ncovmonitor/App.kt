@@ -3,10 +3,16 @@ package studio.papercube.ncovmonitor
 import okhttp3.OkHttpClient
 import studio.papercube.library.simplelogger.AsyncSimpleLogger
 import studio.papercube.library.simplelogger.TimeFormatter.currentTimeDividedWithHyphens
+import studio.papercube.ncovmonitor.config.Interval
 import studio.papercube.ncovmonitor.datasources.DxySource
+import studio.papercube.ncovmonitor.datasources.NeteaseSource
+import studio.papercube.ncovmonitor.datasources.NeteaseWrappedDxySource
 import java.io.File
 import java.io.PrintWriter
 import java.time.LocalDate
+import java.util.concurrent.Callable
+import java.util.stream.Collectors
+import java.util.stream.Stream
 import kotlin.concurrent.thread
 
 val httpClient = OkHttpClient()
@@ -15,13 +21,15 @@ val log = AsyncSimpleLogger.inDirectory(File("./log/"))
 fun main(args: Array<String>) {
     val thread = thread {
         while (true) {
-            val interval = 1800
+            val interval = Interval.queryAsync()
             try {
                 perform()
             } catch (e: Exception) {
                 log.e(e)
             }
-            Thread.sleep(1000L * interval)
+            val intervalMillis = 1000L * interval.get()
+            log.v("Interval = $intervalMillis")
+            Thread.sleep(intervalMillis)
         }
     }
     thread.join()
@@ -49,13 +57,21 @@ inline fun newResultFile(action: PrintWriter.(fileName: String) -> Unit) {
 
 fun perform() {
     newResultFile { fileName ->
-        val sources = listOf<DataSource>(DxySource())
-        for (source in sources) {
-            val result = source.fetchDataSource()
+        val results = Stream.of(
+                DxySource(),
+                NeteaseSource(),
+                NeteaseWrappedDxySource()
+        )
+                .parallel()
+                .map { Pair(it, it.fetchDataSource()) }
+                .collect(Collectors.toList())
+        for ((source, result) in results) {
+            println("============================")
             println("Source: ${source.sourceName}")
             println(result.updateTime)
             println(result.overall)
             println(result.provinceData)
+            println("\n\n")
         }
         log.v("Successfully saved result to $fileName")
     }
