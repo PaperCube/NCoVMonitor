@@ -32,7 +32,7 @@ class NeteaseSource : DataSource(
                 ?: "--"
     }
 
-    override fun fetchDataSource(): Statistics {
+    override fun fetchDataSource(): StatObject {
         val epidemicDataJsUrl = "https://news.163.com/special/00019HSN/epidemic_data.js"
         val request = newRequestBuilder()
                 .url(epidemicDataJsUrl)
@@ -48,17 +48,17 @@ class NeteaseSource : DataSource(
         return super.fetchDataSource()
     }
 
-    override fun parseResponse(response: Response): Statistics {
+    override fun parseResponse(response: Response): StatObject {
         val string = response.body?.string()
         try {
             string ?: throw BadResponseException.nullBody()
             val counts = count(string)
             val time = extractTime(string)
             val provinceData = futureProvinceData?.get()?.body?.bytes()?.toString(Charset.forName("GBK"))
-            return Statistics(
-                    time,
-                    counts,
-                    provinceData
+            return newStatObject(
+                    "counts" to counts,
+                    "time" to time,
+                    "provinceData" to provinceData
             )
         } catch (e: Exception) {
             log.e(msg = "Failed to parse response. Response body: $string")

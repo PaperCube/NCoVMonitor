@@ -1,5 +1,6 @@
 package studio.papercube.ncovmonitor
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import okhttp3.OkHttpClient
 import studio.papercube.library.simplelogger.AsyncSimpleLogger
 import studio.papercube.library.simplelogger.TimeFormatter.currentTimeDividedWithHyphens
@@ -10,7 +11,6 @@ import studio.papercube.ncovmonitor.datasources.NeteaseWrappedDxySource
 import java.io.File
 import java.io.PrintWriter
 import java.time.LocalDate
-import java.util.concurrent.Callable
 import java.util.stream.Collectors
 import java.util.stream.Stream
 import kotlin.concurrent.thread
@@ -55,7 +55,15 @@ inline fun newResultFile(action: PrintWriter.(fileName: String) -> Unit) {
     }
 }
 
+fun DataSource.tryFetchData(): StatObject? = try {
+    fetchDataSource()
+} catch (e: Exception) {
+    log.e(null, "Failed to fetch data from: $this", e)
+    null
+}
+
 fun perform() {
+    val objectMapper = ObjectMapper().writerWithDefaultPrettyPrinter()
     newResultFile { fileName ->
         val results = Stream.of(
                 DxySource(),
@@ -63,16 +71,10 @@ fun perform() {
                 NeteaseWrappedDxySource()
         )
                 .parallel()
-                .map { Pair(it, it.fetchDataSource()) }
+                .map { it.tryFetchData() }
+                .filter { it != null }
                 .collect(Collectors.toList())
-        for ((source, result) in results) {
-            println("============================")
-            println("Source: ${source.sourceName}")
-            println(result.updateTime)
-            println(result.overall)
-            println(result.provinceData)
-            println("\n\n")
-        }
+        objectMapper.writeValue(this, results)
         log.v("Successfully saved result to $fileName")
     }
 }

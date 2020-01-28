@@ -10,6 +10,10 @@ abstract class DataSource(
     protected open val userAgent get() = HttpRequestParameters.userAgent
     protected open val acceptContent: String get() = HttpRequestParameters.acceptContent
 
+    protected open fun newStatObject(vararg pairs: Pair<*, *>): StatObject {
+        return StatObject.of(sourceName, *pairs)
+    }
+
     protected open fun newRequestBuilder(): Request.Builder {
         return Request.Builder()
                 .setBasicProperties()
@@ -26,14 +30,18 @@ abstract class DataSource(
         addHeader("accept", acceptContent)
     }
 
-    protected abstract fun parseResponse(response: Response): Statistics
+    protected abstract fun parseResponse(response: Response): StatObject
 
-    open fun fetchDataSource(): Statistics {
+    open fun fetchDataSource(): StatObject {
         val request = newRequest()
         val response = httpClient.newCall(request).execute()
         if (!response.isSuccessful) {
             throw BadResponseException("Request failed")
         }
         return parseResponse(response)
+    }
+
+    override fun toString(): String {
+        return "DataSource(sourceName='$sourceName', urlString='$urlString')"
     }
 }
