@@ -24,7 +24,7 @@ class DxySource : DataSource(
 
     private fun extractTime(str: String): Any {
         val modifyTime = "\"modifyTime\":(\\d+)".toRegex().extractGroupIn(str, 1) ?: "-1"
-        val literalTime = "截至 ([\\d\\s-:]+?)（北京时间）数据统计".toRegex().extractGroupIn(str, 0) ?: "--"
+        val literalTime = "截至 ([\\d\\s-:]+?) 全国数据统计".toRegex().extractGroupIn(str, 0) ?: "--"
         return object {
             val modifyTime = modifyTime
             val literalTime = literalTime

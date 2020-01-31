@@ -75,6 +75,6 @@ fun perform() {
                 .filter { it != null }
                 .collect(Collectors.toList())
         objectMapper.writeValue(this, results)
-        log.v("Successfully saved result to $fileName")
+        log.v("Successfully saved ${results.size} result(s) to $fileName")
     }
 }

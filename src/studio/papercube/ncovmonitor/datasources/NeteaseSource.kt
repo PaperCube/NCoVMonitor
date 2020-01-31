@@ -25,7 +25,7 @@ class NeteaseSource : DataSource(
 
     private fun extractTime(str: String): String {
         //<span>截止2020/01/24 20:00</span>
-        val regex = "数据统计<span>截止([\\d/:\\s]+)</span>".toRegex()
+        val regex = "数据统计<span>截至([\\d-/:\\s]+)</span>".toRegex()
         return regex.find(str)
                 ?.groupValues
                 ?.getOrNull(1)
