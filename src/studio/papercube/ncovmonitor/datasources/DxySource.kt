@@ -5,7 +5,7 @@ import studio.papercube.ncovmonitor.*
 
 class DxySource : DataSource(
         "dxy",
-        "https://3g.dxy.cn/newh5/view/pneumonia"
+        "https://ncov.dxy.cn/ncovh5/view/pneumonia"
 ) {
     private fun count(str: String): StatisticItem {
         //language=RegExp
@@ -24,7 +24,7 @@ class DxySource : DataSource(
 
     private fun extractTime(str: String): Any {
         val modifyTime = "\"modifyTime\":(\\d+)".toRegex().extractGroupIn(str, 1) ?: "-1"
-        val literalTime = "截至 ([\\d\\s-:]+?) 全国数据统计".toRegex().extractGroupIn(str, 0) ?: "--"
+        val literalTime = "截至 ([\\d\\s-/:]+?) 全国数据统计".toRegex().extractGroupIn(str, 0) ?: "--"
         return object {
             val modifyTime = modifyTime
             val literalTime = literalTime
