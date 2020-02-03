@@ -19,7 +19,8 @@ class DxySource : DataSource(
         val suspected = source.extractIntFromRegex(1, "\"suspectedCount\":(\\d+)".toRegex()) ?: -1
         val cured = source.extractIntFromRegex(1, "\"curedCount\":(\\d+)".toRegex()) ?: -1
         val death = source.extractIntFromRegex(1, "\"deadCount\":(\\d+)".toRegex()) ?: -1
-        return StatisticItem(confirmed, suspected, cured, death)
+        val serious = source.extractIntFromRegex(1, "\"seriousCount\":(\\d+)".toRegex()) ?: -1
+        return StatisticItem(confirmed, suspected, cured, death, serious)
     }
 
     private fun extractTime(str: String): Any {
