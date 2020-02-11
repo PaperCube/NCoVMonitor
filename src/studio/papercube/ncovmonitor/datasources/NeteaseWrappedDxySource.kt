@@ -1,5 +1,6 @@
 package studio.papercube.ncovmonitor.datasources
 
+import okhttp3.Request
 import okhttp3.Response
 import studio.papercube.ncovmonitor.BadResponseException
 import studio.papercube.ncovmonitor.DataSource

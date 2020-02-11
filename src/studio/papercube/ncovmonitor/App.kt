@@ -6,6 +6,7 @@ import studio.papercube.library.simplelogger.AsyncSimpleLogger
 import studio.papercube.library.simplelogger.TimeFormatter.currentTimeDividedWithHyphens
 import studio.papercube.ncovmonitor.config.Interval
 import studio.papercube.ncovmonitor.datasources.DxySource
+import studio.papercube.ncovmonitor.datasources.NeteaseRawJson
 import studio.papercube.ncovmonitor.datasources.NeteaseSource
 import studio.papercube.ncovmonitor.datasources.NeteaseWrappedDxySource
 import java.io.File
@@ -67,8 +68,9 @@ fun perform() {
     newResultFile { fileName ->
         val results = Stream.of(
                 DxySource(),
-                NeteaseSource(),
-                NeteaseWrappedDxySource()
+//                NeteaseSource(),
+                NeteaseWrappedDxySource(),
+                NeteaseRawJson()
         )
                 .parallel()
                 .map { it.tryFetchData() }
