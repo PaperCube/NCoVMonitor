@@ -9,7 +9,7 @@ class DxySource : DataSource(
 ) {
     private fun count(str: String): StatisticItem {
         //language=RegExp
-        val regex = "\"countRemark\":\".*?\",(\"confirmedCount\":.+?),\"virus\":".toRegex()
+        val regex = "\"countRemark\":\".*?\",(\"currentConfirmedCount\":.+?),\"virus\":".toRegex()
         val match = regex.find(str)
                 ?: throw BadResponseException.noMatch()
         val groupValues = match.groupValues
